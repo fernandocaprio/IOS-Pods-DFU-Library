@@ -132,16 +132,9 @@ class DFUExecutor : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
 
     //MARK: - CBCentralManager delegate
     func centralManagerDidUpdateState(central: CBCentralManager){
-        if #available(iOS 10.0, *) {
-            if central.state != CBManagerState.PoweredOn {
-                self.delegate?.didErrorOccur(DFUError.FailedToConnect, withMessage: "The bluetooth radio is powered off")
-                self.delegate?.didStateChangedTo(.Failed)
-            }
-        } else {
-            if central.state != CBCentralManagerState.PoweredOn {
-                self.delegate?.didErrorOccur(DFUError.FailedToConnect, withMessage: "The bluetooth radio is powered off")
-                self.delegate?.didStateChangedTo(.Failed)
-            }
+        if central.state != .PoweredOn {
+            self.delegate?.didErrorOccur(DFUError.FailedToConnect, withMessage: "The bluetooth radio is powered off")
+            self.delegate?.didStateChangedTo(.Failed)
         }
     }
     
