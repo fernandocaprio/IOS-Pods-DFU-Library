@@ -8,6 +8,18 @@
 
 import CoreBluetooth
 
+extension CBCentralManager {
+    
+    internal var centralManagerState: CBCentralManagerState  {
+        get {
+            guard let state = CBCentralManagerState(rawValue: state.rawValue) else {
+                return .Unknown
+            }
+            return state
+        }
+    }
+}
+
 class DFUExecutor : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     
     private var delegate:DFUServiceDelegate? {
@@ -132,7 +144,8 @@ class DFUExecutor : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
 
     //MARK: - CBCentralManager delegate
     func centralManagerDidUpdateState(central: CBCentralManager){
-        if central.state != CBCentralManagerState.PoweredOn {
+        
+        if central.centralManagerState != CBCentralManagerState.PoweredOn {
             self.delegate?.didErrorOccur(DFUError.FailedToConnect, withMessage: "The bluetooth radio is powered off")
             self.delegate?.didStateChangedTo(.Failed)
         }
