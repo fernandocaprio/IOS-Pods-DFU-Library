@@ -22,6 +22,18 @@
 
 import CoreBluetooth
 
+extension CBCentralManager {
+    
+    internal var centralManagerState: CBCentralManagerState  {
+        get {
+            guard let state = CBCentralManagerState(rawValue: state.rawValue) else {
+                return .Unknown
+            }
+            return state
+        }
+    }
+}
+
 internal class SecureDFUPeripheral: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate {
     /// Bluetooth Central Manager used to scan for the peripheral.
     private let centralManager:CBCentralManager
@@ -323,7 +335,7 @@ internal class SecureDFUPeripheral: NSObject, CBPeripheralDelegate, CBCentralMan
     // MARK: - Central Manager methods
     
     func centralManagerDidUpdateState(central: CBCentralManager) {
-        logCentralManagerState(central.state)
+        logCentralManagerState(central.centralManagerState)
     }
     
     func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
