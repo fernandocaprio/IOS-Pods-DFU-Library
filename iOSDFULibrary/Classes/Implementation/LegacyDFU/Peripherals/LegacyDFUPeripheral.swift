@@ -22,18 +22,6 @@
 
 import CoreBluetooth
 
-extension CBCentralManager {
-    
-    internal var centralManagerState: CBCentralManagerState  {
-        get {
-            guard let state = CBCentralManagerState(rawValue: state.rawValue) else {
-                return .Unknown
-            }
-            return state
-        }
-    }
-}
-
 @objc internal class LegacyDFUPeripheral: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate {
     /// Bluetooth Central Manager used to scan for the peripheral.
     private let centralManager:CBCentralManager
@@ -322,7 +310,34 @@ extension CBCentralManager {
     // MARK: - Central Manager methods
     
     func centralManagerDidUpdateState(central: CBCentralManager) {
-        logCentralManagerState(central.centralManagerState)
+        var stateAsString:String
+        
+        switch (central.state) {
+        case .PoweredOn:
+            stateAsString = "Powered ON"
+            break
+            
+        case .PoweredOff:
+            stateAsString = "Powered OFF"
+            break
+            
+        case .Resetting:
+            stateAsString = "Resetting"
+            break
+            
+        case .Unauthorized:
+            stateAsString = "Unauthorized"
+            break
+            
+        case .Unsupported:
+            stateAsString = "Unsupported"
+            break
+            
+        case .Unknown:
+            stateAsString = "Unknown"
+            break
+        }
+        logger.d("[Callback] Central Manager did update state to: \(stateAsString)")
     }
     
     func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
@@ -468,34 +483,4 @@ extension CBCentralManager {
         dfuService = nil
     }
     
-    private func logCentralManagerState(state:CBCentralManagerState) {
-        var stateAsString:String
-        
-        switch (state) {
-        case .PoweredOn:
-            stateAsString = "Powered ON"
-            break
-            
-        case .PoweredOff:
-            stateAsString = "Powered OFF"
-            break
-            
-        case .Resetting:
-            stateAsString = "Resetting"
-            break
-            
-        case .Unauthorized:
-            stateAsString = "Unauthorized"
-            break
-            
-        case .Unsupported:
-            stateAsString = "Unsupported"
-            break
-            
-        case .Unknown:
-            stateAsString = "Unknown"
-            break
-        }
-        logger.d("[Callback] Central Manager did update state to: \(stateAsString)")
-    }
 }
